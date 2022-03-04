@@ -49,7 +49,7 @@
                   <button
                     type="button"
                     class="btn btn-primary"
-                    @click="addCart(product.id)"
+                    @click="$emit('add-cart', product.id, qty)"
                   >
                     加入購物車
                   </button>
@@ -83,13 +83,24 @@ export default {
   // 每次打開 modal 就要搓伺服器一次，偏向用戶行為
   watch: {
     id() {
-      console.log(this.id);
+      //console.log(this.id);
       this.product = {};
       this.getProduct();
     },
   },
   // 2. 新增 methods 將 openModal 包出去
   methods: {
+    // 4. 在元件內取得遠端資料
+    getProduct() {
+      this.$http
+        .get(
+          `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/product/${this.id}`
+        )
+        .then((res) => {
+          console.log(res);
+          this.product = res.data.product;
+        });
+    },
     openModal() {
       this.productModal.show();
     },
@@ -98,21 +109,11 @@ export default {
       this.productModal.hide();
     },
   },
-  // 4. 在元件內取得遠端資料
-  getProduct() {
-    this.$http
-      .get(
-        `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/product/${this.id}`
-      )
-      .then((res) => {
-        //console.log(res);
-        this.product = res.data.product;
-      });
-  },
+
   // 12. 內層傳外層
-  addCart() {
-    this.$emit("add-cart", this.product.id, this.qty);
-  },
+  // addCart() {
+  //   this.$emit("add-cart", this.product.id, this.qty);
+  // },
 
   // 初始化
   mounted() {
