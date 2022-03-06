@@ -84,11 +84,12 @@
     <!-- 分頁元件 -->
     <!-- AdminProductModal -->
     <AdminProductModal
-      :temp-product="tempProduct"
+      :product="tempProduct"
       :is-new="isNew"
       ref="adminProductModal"
       @get-products="getProducts"
     ></AdminProductModal>
+
     <!-- DelProductModal model -->
     <DelProductModal
       :temp-product="tempProduct"
@@ -134,7 +135,7 @@ export default {
       this.isLoading = true;
       //陣列包物件
       const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/products?page=${page}`;
-      //物件包物件
+      //物件包物件型式
       //const url = `${api}/api/${path}/admin/products/all`;
       this.$http
         .get(url)
