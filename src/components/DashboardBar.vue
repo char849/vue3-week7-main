@@ -26,11 +26,6 @@
             >
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/admin/coupon"
-              >優惠券</router-link
-            >
-          </li>
-          <li class="nav-item">
             <a href="#" class="nav-link" @click.prevent="signout">登出</a>
           </li>
         </ul>
@@ -64,6 +59,7 @@ export default {
           .post(url, { api_token: this.token })
           .then(() => {
             this.checkSuccess = true;
+            //alert("登入成功");
           })
           .catch((err) => {
             alert(err.data.message);
@@ -76,7 +72,7 @@ export default {
     },
     signout() {
       document.cookie = "hexToken=;expires=;";
-      alert("token 已清除");
+      //alert("token 已清除");
       this.$router.push("/login");
     },
   },
