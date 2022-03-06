@@ -201,7 +201,7 @@
 import Modal from "bootstrap/js/dist/modal";
 
 export default {
-  //props: {"tempProduct", "isNew"},
+  //props: ["tempProduct", "isNew"],
   props: {
     product: {
       type: Object,
@@ -254,6 +254,7 @@ export default {
     },
   },
   mounted() {
+    this.tempProduct = JSON.parse(JSON.stringify(this.product));
     //1. ref="modal"
     this.adminProductModal = new Modal(this.$refs.modal, {
       keyboard: false,
