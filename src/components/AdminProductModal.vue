@@ -187,7 +187,7 @@
           <button
             type="button"
             class="btn btn-primary"
-            @click="updateProduct(tempProduct)"
+            @click="updateProduct()"
           >
             確認
           </button>
@@ -202,12 +202,17 @@ import Modal from "bootstrap/js/dist/modal";
 
 export default {
   //props: {"tempProduct", "isNew"},
-  tempProduct: {
-    type: Object,
-  },
-  isNaN: {
-    type: Boolean,
-    default: false,
+  props: {
+    product: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
+    isNew: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
@@ -233,7 +238,7 @@ export default {
         .then((res) => {
           console.log(res);
           this.adminProductModal.hide();
-          this.$emit("get-products", this.tempProduct); //內層用('get-products')的事件, emit 來觸發外層getProducts的方法
+          this.$emit("get-products"); //內層用('get-products')的事件, emit 來觸發外層getProducts的方法
           //this.getProducts(); 沒有getProducts, 它是外層的方法
         })
         .catch((err) => {
