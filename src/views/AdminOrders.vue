@@ -14,8 +14,7 @@
     <tbody>
       <template v-for="(item, key) in orders" :key="key">
         <tr v-if="orders.length" :class="{ 'text-secondary': !item.is_paid }">
-          <td>{{ $filters.date(item.create_at) }}</td>
-          <!-- <td>{{ item.create_at }}</td> -->
+          <td>{{ date(item.create_at) }}</td>
           <td><span v-text="item.user.email" v-if="item.user"></span></td>
           <td>
             <ul class="list-unstyled">
@@ -100,6 +99,11 @@ export default {
   },
   inject: ["emitter"],
   methods: {
+    // 時間戳
+    date(time) {
+      const date = new Date(time * 1000);
+      return date.toLocaleDateString();
+    },
     getOrders(page = 1) {
       const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/orders?page=${page}`;
       this.isLoading = true;
