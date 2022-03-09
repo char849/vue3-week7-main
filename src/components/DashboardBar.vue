@@ -20,65 +20,38 @@
               >後台產品列表</router-link
             >
           </li>
+
           <li class="nav-item">
             <router-link class="nav-link" to="/admin/orders"
               >後台訂單列表</router-link
             >
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link" @click.prevent="signout">登出</a>
+            <a href="#" class="nav-link" @click.prevent="logout">登出</a>
           </li>
         </ul>
       </div>
     </div>
   </nav>
-  <router-link v-if="checkSuccess"></router-link>
 </template>
 
 <script>
 export default {
-  name: "Dashboard",
-  data() {
-    return {
-      checkSuccess: false,
-    };
-  },
   methods: {
-    checkLogin() {
-      // 取出 Token
-      const token = document.cookie.replace(
-        /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
-        "$1"
-      );
-      if (token) {
-        this.$http.defaults.headers.common.Authorization = token;
-
-        const url = `${process.env.VUE_APP_API}api/user/check`;
-        this.$http
-          // 帶入token
-          .post(url, { api_token: this.token })
-          .then(() => {
-            this.checkSuccess = true;
-            //alert("登入成功");
-          })
-          .catch((err) => {
-            alert(err.data.message);
+    logout() {
+      const api = `${process.env.VUE_APP_API}logout`;
+      this.$http
+        .post(api)
+        .then((res) => {
+          this.$httpMessageState(res, "登出");
+          if (res.data.success) {
             this.$router.push("/login");
-          });
-      } else {
-        alert("您尚未登入");
-        this.$router.push("/login");
-      }
+          }
+        })
+        .catch((err) => {
+          this.$httpMessageState(err.response, "錯誤訊息");
+        });
     },
-    signout() {
-      document.cookie = "hexToken=;expires=;";
-      //alert("token 已清除");
-      this.$router.push("/login");
-    },
-  },
-  //初始
-  mounted() {
-    this.checkLogin();
   },
 };
 </script>

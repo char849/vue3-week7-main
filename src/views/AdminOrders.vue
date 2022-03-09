@@ -1,4 +1,5 @@
 <template>
+  <Loading :active="isLoading"></Loading>
   <table class="table mt-4">
     <thead>
       <tr>
@@ -14,10 +15,11 @@
       <template v-for="(item, key) in orders" :key="key">
         <tr v-if="orders.length" :class="{ 'text-secondary': !item.is_paid }">
           <td>{{ $filters.date(item.create_at) }}</td>
+          <!-- <td>{{ item.create_at }}</td> -->
           <td><span v-text="item.user.email" v-if="item.user"></span></td>
           <td>
             <ul class="list-unstyled">
-              <li v-for="(product, i) in item.products" :key="i">
+              <li v-for="(product, index) in item.products" :key="index">
                 {{ product.product.title }} 數量：{{ product.qty }}
                 {{ product.product.unit }}
               </li>
@@ -29,11 +31,11 @@
               <input
                 class="form-check-input"
                 type="checkbox"
-                :id="`paidSwitch${item.id}`"
+                :id="`${item.id}`"
                 v-model="item.is_paid"
-                @change="updatePaid(item)"
+                @change="$emit('update-paid', item)"
               />
-              <label class="form-check-label" :for="`paidSwitch${item.id}`">
+              <label class="form-check-label" :for="`${item.id}`">
                 <span v-if="item.is_paid">已付款</span>
                 <span v-else>未付款</span>
               </label>
@@ -44,7 +46,7 @@
               <button
                 class="btn btn-outline-primary btn-sm"
                 type="button"
-                @click="openModal(item)"
+                @click="openOrdersModal(item)"
               >
                 檢視
               </button>
@@ -61,26 +63,42 @@
       </template>
     </tbody>
   </table>
-  <!-- 1.分頁元件 -->
-  <Pagination :pages="pagination" @get-product="getProducts"></Pagination>
   <!-- 分頁元件 -->
+  <Pagination :pages="pagination" @get-product="getOrders"></Pagination>
+
+  <OrderModal
+    :order="tempOrder"
+    ref="orderModal"
+    @update-paid="getOrders"
+  ></OrderModal>
+  <DelOrderModal
+    :item="tempOrder"
+    ref="delOrderModal"
+    @del-order-item="delOrder"
+  ></DelOrderModal>
 </template>
 
 <script>
 import Pagination from "@/components/Pagination.vue";
+import OrderModal from "@/components/OrderModal.vue";
+import DelOrderModal from "@/components/DelOrderModal.vue";
 
 export default {
   data() {
     return {
-      orders: {},
+      orders: [],
       isNew: false,
       pagination: {},
       tempOrder: {},
+      isLoading: false,
     };
   },
   components: {
     Pagination,
+    OrderModal,
+    DelOrderModal,
   },
+  inject: ["emitter"],
   methods: {
     getOrders(page = 1) {
       const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/orders?page=${page}`;
@@ -94,8 +112,35 @@ export default {
           this.pagination = res.data.pagination;
         })
         .catch((err) => {
-          alert(err.error.response);
+          //alert(err.error.response);
+          this.$httpMessageState(err.response, "錯誤訊息");
         });
+    },
+
+    delOrder() {
+      const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/order/${this.tempOrder.id}`;
+      this.$http
+        .delete(url)
+        .then((res) => {
+          console.log(res);
+          this.$emit("get-orders");
+          this.$refs.delOrderModal.hideModal();
+          this.getOrders();
+        })
+        .catch((err) => {
+          alert(err.data.message);
+          //this.$httpMessageState(err.response, "錯誤訊息");
+        });
+    },
+
+    openOrdersModal(item) {
+      this.tempOrder = { ...item };
+      this.isNew = false;
+      this.$refs.orderModal.openModal();
+    },
+    openDelOrderModal(item) {
+      this.tempOrder = { ...item };
+      this.$refs.delOrderModal.openModal();
     },
   },
   mounted() {

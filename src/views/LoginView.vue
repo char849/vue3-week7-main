@@ -1,5 +1,7 @@
 <template>
   <div class="container">
+    <Loading :active="isLoading" :z-index="1060"></Loading>
+    <ToastMessages></ToastMessages>
     <h2>後台登入頁面</h2>
     <div class="row">
       <div class="col-12">
@@ -46,16 +48,29 @@
 </template>
 
 <script>
+import emitter from "@/libs/emitter";
+import ToastMessages from "@/components/ToastMessages.vue";
+
 export default {
+  components: {
+    ToastMessages,
+  },
   data() {
     return {
       user: {},
+      isLoading: false,
+    };
+  },
+  provide() {
+    return {
+      emitter,
     };
   },
   // email 登入,寫入 cookie、轉址
   methods: {
     signIn() {
       const api = `${process.env.VUE_APP_API}admin/signin`;
+      this.isLoading = true;
       this.$http
         .post(api, this.user)
         //成功的結果
@@ -65,6 +80,7 @@ export default {
           // 儲存登入的cookie token資訊
           // expires 設置有效時間 unix timestamp 時間戳
           document.cookie = `hexToken=${token};expires=${new Date(expired)};`;
+          this.isLoading = false;
           //轉址的動作
           // $router(方法), $route(取得參數)
           // 轉址到後台使用 push() 方法
@@ -73,7 +89,9 @@ export default {
         })
         //失敗結果
         .catch((err) => {
-          alert(err.data.message);
+          //alert(err.data.message);
+          this.isLoading = false;
+          this.$httpMessageState(err.response, "登入");
         });
     },
   },

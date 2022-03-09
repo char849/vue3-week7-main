@@ -244,8 +244,8 @@ export default {
           //console.log("cart:", res);
           this.cartData = res.data.data;
           this.isLoading = false;
-          // get-cart
-          emitter.emit("get-cart");
+          // // get-cart
+          // emitter.emit("get-cart");
         });
     },
     // 8. 刪除品項

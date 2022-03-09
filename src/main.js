@@ -17,6 +17,10 @@ import AllRules from "@vee-validate/rules";
 import { localize, setLocale } from "@vee-validate/i18n";
 // 匯入繁體中文語系檔案
 import zhTW from "@vee-validate/i18n/dist/locale/zh_TW.json";
+import $httpMessageState from "@/methods/pushMessageState";
+
+import App from "./App.vue";
+import router from "./router";
 
 // 定義驗證規則
 Object.keys(AllRules).forEach((rule) => {
@@ -33,16 +37,17 @@ setLocale("zh_TW");
 
 library.add(faSpinner);
 
-import App from "./App.vue";
-import router from "./router";
+const app = createApp(App);
 
-createApp(App)
-  .use(router)
-  .use(VueAxios, axios)
-  .component("Loading", Loading)
-  // 註冊 vee-validate 三個全域元件
-  .component("Form", Form)
-  .component("Field", Field)
-  .component("ErrorMessage", ErrorMessage)
-  .component("font-awesome-icon", FontAwesomeIcon)
-  .mount("#app");
+// 將 $httpMessageState 加入全域下，這樣在其他地方就能直接使用
+app.config.globalProperties.$httpMessageState = $httpMessageState;
+
+app.use(router);
+app.use(VueAxios, axios);
+app.component("Loading", Loading);
+// 註冊 vee-validate 三個全域元件
+app.component("Form", Form);
+app.component("Field", Field);
+app.component("ErrorMessage", ErrorMessage);
+app.component("font-awesome-icon", FontAwesomeIcon);
+app.mount("#app");

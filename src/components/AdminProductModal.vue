@@ -32,6 +32,23 @@
                   class="form-control mb-2"
                   placeholder="請輸入圖片連結"
                 />
+                <!-- 上傳圖片 -->
+                <div class="mb-3">
+                  <label for="customFile" class="form-label"
+                    >或 上傳圖片
+                    <i
+                      class="fas fa-spinner fa-spin"
+                      v-if="status.fileUploading"
+                    ></i>
+                  </label>
+                  <input
+                    type="file"
+                    id="customFile"
+                    class="form-control"
+                    ref="fileInput"
+                    @change="uploadFile"
+                  />
+                </div>
                 <img class="img-fluid" :src="tempProduct.imageUrl" />
               </div>
               <h3 class="mb-3">多圖新增</h3>
@@ -200,8 +217,9 @@
 <script>
 import Modal from "bootstrap/js/dist/modal";
 
+// eslint 不允許你使用 props 傳入的值 直接使用在 v-model 上面，所以 需要把
+// 外元件改成 :product="tempProduct"，內元件在 mounted 加入 this.tempProduct = JSON.parse(JSON.stringify(this.product))
 export default {
-  //props: ["tempProduct", "isNew"],
   props: {
     product: {
       type: Object,
@@ -217,32 +235,74 @@ export default {
 
   data() {
     return {
-      status: {},
       modal: {},
       id: "",
+      isLoading: false,
       tempProduct: {
         imagesUrl: [],
       },
+      status: {},
     };
   },
+  inject: ["emitter"],
   methods: {
+    uploadFile() {
+      const uploadedFile = this.$refs.fileInput.files[0];
+      const formData = new FormData();
+      formData.append("file-to-upload", uploadedFile);
+      const url = `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/admin/upload`;
+      this.status.fileUploading = true;
+      this.$http
+        .post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          this.status.fileUploading = false;
+          if (res.data.success) {
+            this.tempProduct.imageUrl = res.data.imageUrl;
+            this.$refs.fileInput.value = "";
+            //alert("圖片己上傳");
+            this.emitter.emit("push-message", {
+              style: "success",
+              title: "圖片上傳結果",
+              content: res.data.message,
+            });
+          } else {
+            this.$refs.fileInput.value = "";
+            this.emitter.emit("push-message", {
+              style: "danger",
+              title: "圖片上傳結果",
+              content: res.data.message,
+            });
+          }
+        })
+        .catch((err) => {
+          this.status.fileUploading = false;
+          this.$httpMessageState(err.response, "圖片失敗");
+        });
+    },
     updateProduct() {
       let url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product`;
       let httpApi = "post";
+      let status = "新增產品";
       if (!this.isNew) {
         url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${this.tempProduct.id}`;
         httpApi = "put";
+        status = "更新產品";
       }
 
       this.$http[httpApi](url, { data: this.tempProduct })
         .then((res) => {
-          console.log(res);
+          //console.log(res);
           this.adminProductModal.hide();
+          this.$httpMessageState(res, status);
           this.$emit("get-products"); //內層用('get-products')的事件, emit 來觸發外層getProducts的方法
-          //this.getProducts(); 沒有getProducts, 它是外層的方法
+          //this.getProducts(); //沒有getProducts, 它是外層的方法
         })
         .catch((err) => {
-          alert(err.data.message);
+          this.$httpMessageState(err, status);
         });
     },
     openModal() {
@@ -251,6 +311,12 @@ export default {
     // 12. 內層元件也要新增 adminProductModal()
     closeModal() {
       this.adminProductModal.hide();
+    },
+  },
+  // 加上watch 被掛載在 AdminProduct 這個元件下面的 AdminProductModal 重新啟動，讓watch 監聽 props 的值
+  watch: {
+    product() {
+      this.tempProduct = JSON.parse(JSON.stringify(this.product));
     },
   },
   mounted() {

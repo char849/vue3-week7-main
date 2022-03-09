@@ -1,4 +1,5 @@
 <template>
+  <Loading :active="isLoading"></Loading>
   <div
     class="modal fade"
     id="productModal"
@@ -69,9 +70,6 @@ import Modal from "bootstrap/js/dist/modal";
 
 export default {
   props: ["id"],
-  // props: {
-  //   id: String,
-  // },
   data() {
     return {
       modal: {}, // 2. 定義一個 modal 的資料變數
@@ -88,15 +86,17 @@ export default {
       this.getProduct();
     },
   },
-  // 2. 新增 methods 將 openModal 包出去
+  // 2. 新增 methods 將 openModal 包出去的方式
   methods: {
     // 4. 在元件內取得遠端資料
     getProduct() {
+      this.isLoading = true;
       this.$http
         .get(
           `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/product/${this.id}`
         )
         .then((res) => {
+          this.isLoading = false;
           console.log(res);
           this.product = res.data.product;
         });

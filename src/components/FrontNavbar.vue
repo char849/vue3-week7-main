@@ -27,8 +27,14 @@
             <router-link class="nav-link" to="/cart">前台購物車</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/admin/products"
-              >後台購物車列表</router-link
+            <router-link class="nav-link" to="/login">登入產品後台</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link
+              v-if="status === true"
+              class="nav-link"
+              to="/admin/products"
+              >產品後台</router-link
             >
           </li>
         </ul>
@@ -52,6 +58,7 @@ export default {
       cartData: {
         carts: [], // 14. 加入第二層 carts: [] html的清空購物車那邊就可以寫入它的結構了
       },
+      //status: false,
     };
   },
   methods: {
@@ -64,6 +71,25 @@ export default {
           this.cartData = res.data.data;
         });
     },
+  },
+
+  created() {
+    const token = document.cookie.replace(
+      /(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/,
+      "$1"
+    );
+    this.$http.defaults.headers.common.Authorization = `${token}`;
+    const api = `${process.env.VUE_APP_API}api/user/check`;
+    this.$http
+      .post(api)
+      .then(() => {
+        this.status = true;
+        this.$router.push("/admin/products");
+      })
+      .catch(() => {
+        this.status = false;
+        this.$router.push("/products");
+      });
   },
   //初使化
   mounted() {

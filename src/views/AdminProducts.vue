@@ -114,6 +114,9 @@ export default {
       tempProduct: {
         imagesUrl: [],
       },
+      status: {
+        fileUploading: false,
+      },
       modal: {
         AdminProductModal: "",
         DelProductModal: "",
@@ -129,6 +132,7 @@ export default {
     AdminProductModal,
     DelProductModal,
   },
+  inject: ["emitter"],
   methods: {
     //取得產品列表
     getProducts(page = 1) {
@@ -146,7 +150,8 @@ export default {
           this.pagination = res.data.pagination;
         })
         .catch((err) => {
-          alert(err.data.message);
+          //alert(err.data.message);
+          this.$httpMessageState(err.response, "錯誤訊息");
         });
       //物件跑迴圈二種方式 - 實戰常用
       // Object.value(this.products).forEach((item) => {
