@@ -2,6 +2,7 @@ import { createApp } from "vue";
 
 import axios from "axios";
 import VueAxios from "vue-axios";
+import "bootstrap";
 // 匯入 fontawesome 套件
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
