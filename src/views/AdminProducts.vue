@@ -55,6 +55,9 @@
             >
               {{ item.is_enabled ? "啟用" : "未啟用" }}
             </button>
+            <!-- <span
+            :class="[item.is_enabled === 1?'text-success': 'text-muted']">
+              {{item.is_enabled === 1? '啟用':'未啟用'}}</span> -->
           </td>
           <td>
             <div class="btn-group">
@@ -132,7 +135,7 @@ export default {
     AdminProductModal,
     DelProductModal,
   },
-  inject: ["emitter"],
+  // inject: ["emitter"],
   methods: {
     //取得產品列表
     getProducts(page = 1) {

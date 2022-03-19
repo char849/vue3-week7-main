@@ -4,9 +4,7 @@
 
 <style lang="scss">
 @import "bootstrap/scss/bootstrap";
-</style>
 
-<style>
 .form-signin,
 .text-muted,
 h2 {

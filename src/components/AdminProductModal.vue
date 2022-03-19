@@ -302,7 +302,7 @@ export default {
           //this.getProducts(); //沒有getProducts, 它是外層的方法
         })
         .catch((err) => {
-          this.$httpMessageState(err, status);
+          this.$httpMessageState(err.response, status);
         });
     },
     openModal() {
@@ -320,7 +320,7 @@ export default {
     },
   },
   mounted() {
-    this.tempProduct = JSON.parse(JSON.stringify(this.product));
+    //this.tempProduct = JSON.parse(JSON.stringify(this.product));
     //1. ref="modal"
     this.adminProductModal = new Modal(this.$refs.modal, {
       keyboard: false,

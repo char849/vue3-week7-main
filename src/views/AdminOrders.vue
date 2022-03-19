@@ -32,7 +32,6 @@
                 type="checkbox"
                 :id="`${item.id}`"
                 v-model="item.is_paid"
-                @change="$emit('update-paid', item)"
               />
               <label class="form-check-label" :for="`${item.id}`">
                 <span v-if="item.is_paid">已付款</span>
@@ -132,8 +131,8 @@ export default {
           this.getOrders();
         })
         .catch((err) => {
-          alert(err.data.message);
-          //this.$httpMessageState(err.response, "錯誤訊息");
+          //alert(err.data.message);
+          this.$httpMessageState(err.response, "錯誤訊息");
         });
     },
 
