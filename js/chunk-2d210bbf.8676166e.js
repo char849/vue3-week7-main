@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-2d210bbf"],{b8c6:function(n,c,e){"use strict";e.r(c);var t=e("7a23"),b={class:"container"},r=Object(t["h"])("h2",null,"後台優惠券",-1),a=[r];function o(n,c){return Object(t["y"])(),Object(t["g"])("div",b,a)}var s=e("6b0d"),u=e.n(s);const d={},i=u()(d,[["render",o]]);c["default"]=i}}]);
+//# sourceMappingURL=chunk-2d210bbf.8676166e.js.map
