@@ -28,11 +28,7 @@
             />
             <label for="floatingPassword">Password</label>
           </div>
-          <button
-            class="btn btn-lg btn-primary w-100 mt-3"
-            type="button"
-            @click="signIn"
-          >
+          <button class="btn btn-lg btn-primary w-100 mt-3" type="submit">
             登入
           </button>
         </form>
